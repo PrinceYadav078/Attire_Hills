@@ -79,7 +79,7 @@ const Footer = () => {
 
       <Grid className='pt-20' item xs={12} >
         <Typography variant="body2" component="p" align="center">
-          &copy; 2023 My Company. All rights reserved.
+          &copy; 2023 Attire Hills. All rights reserved.
         </Typography>
         <Typography variant="body2" component="p" align="center">
           Made with love by Me.

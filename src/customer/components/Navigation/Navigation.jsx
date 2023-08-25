@@ -237,13 +237,13 @@ export default function Navigation() {
               </button>
 
               {/* Logo */}
-              <div className="ml-4 flex lg:ml-0">
+              <div className="ml-4 flex lg:ml-0 ">
               
                   <span className="sr-only">Your Company</span>
                   <img
-                    src="logo.png"
+                    src="logo2.jpg"
                     alt="Shopwithzosh"
-                    className="h-12 w-12 mr-2"
+                    className="h-12 w-40 mr-2"
                   />
                
               </div>

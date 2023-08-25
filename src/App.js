@@ -4,6 +4,7 @@ import Footer from './customer/components/Footer/Footer';
 import Navigation from './customer/components/Navigation/Navigation';
 import HomePage from './customer/components/Pages/HomePage/HomePage';
 import Product from './customer/components/Product/Product';
+import ProductDetails from './customer/components/ProductDetails/ProductDetails';
 
 
 function App() {
@@ -13,7 +14,8 @@ function App() {
 
       <div>
         {/* <HomePage/>   */}
-        <Product/>
+        {/* <Product/> */}
+        <ProductDetails/>
       </div> 
       <Footer/>    
     </div>

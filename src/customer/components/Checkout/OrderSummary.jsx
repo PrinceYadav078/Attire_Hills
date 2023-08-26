@@ -10,8 +10,8 @@ const OrderSummary = () => {
         <AddressCard/>
       </div>
       <div>
-      <div className="lg:grid grid-cols-3 relative justify-between pt-5">
-        <div className="col-span-2">
+      <div className="lg:grid grid-cols-3 relative justify-between pt-5 ">
+        <div className="col-span-2 space-y-5">
           {[1,1,1,1].map((item)=><CartItem />)}
         </div>
 

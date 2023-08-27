@@ -7,12 +7,14 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
-
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import { navigation } from "../../../config/navigationMenu";
 import { deepPurple } from "@mui/material/colors";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
+import AuthModal from "../Auth/AuthModal";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser, logout } from "../../../State/Auth/Action";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -20,17 +22,17 @@ function classNames(...classes) {
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
- 
-  const navigate= useNavigate();
+
+  const navigate = useNavigate();
 
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
   const jwt = localStorage.getItem("jwt");
+  const { auth } = useSelector((store) => store);
+  const dispatch = useDispatch();
+  const location = useLocation();
 
-
-
-  
   const handleUserClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -43,7 +45,6 @@ export default function Navigation() {
   };
   const handleClose = () => {
     setOpenAuthModal(false);
-   
   };
 
   const handleCategoryClick = (category, section, item, close) => {
@@ -51,9 +52,25 @@ export default function Navigation() {
     close();
   };
 
- 
+  useEffect(() => {
+    if (jwt) {
+      dispatch(getUser(jwt));
+    }
+  }, [jwt, auth.jwt]);
 
- 
+  useEffect(() => {
+    if (auth.user) {
+      handleClose();
+    }
+    if (location.pathname === "/login" || location.pathname === "/register") {
+      navigate(-1);
+    }
+  }, [auth.user]);
+
+  const handleLogout = () => {
+    handleCloseUserMenu();
+    dispatch(logout());
+  };
 
   return (
     <div className="bg-white pb-10">
@@ -241,14 +258,14 @@ export default function Navigation() {
 
               {/* Logo */}
               <div className="ml-4 flex lg:ml-0 ">
-              
+                <Link to="/">
                   <span className="sr-only">Your Company</span>
                   <img
                     src="logo2.jpg"
-                    alt="Shopwithzosh"
+                    alt="Attire Hills"
                     className="h-12 w-40 mr-2"
                   />
-               
+                </Link>
               </div>
 
               {/* Flyout menus */}
@@ -385,7 +402,7 @@ export default function Navigation() {
 
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {true ? (
+                  {auth.user?.firstName ? (
                     <div>
                       <Avatar
                         className="text-white"
@@ -400,9 +417,9 @@ export default function Navigation() {
                           cursor: "pointer",
                         }}
                       >
-                        R
+                        {auth.user?.firstName[0].toUpperCase()}
                       </Avatar>
-                      
+
                       <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
@@ -415,11 +432,15 @@ export default function Navigation() {
                         <MenuItem onClick={handleCloseUserMenu}>
                           Profile
                         </MenuItem>
-                        
-                        <MenuItem onClick={()=>{navigate("account/order")}}>
+
+                        <MenuItem
+                          onClick={() => {
+                            navigate("account/order");
+                          }}
+                        >
                           My Orders
                         </MenuItem>
-                        <MenuItem >Logout</MenuItem>
+                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
                       </Menu>
                     </div>
                   ) : (
@@ -445,17 +466,12 @@ export default function Navigation() {
 
                 {/* Cart */}
                 <div className="ml-4 flow-root lg:ml-6">
-                  <Button
-                    
-                    className="group -m-2 flex items-center p-2"
-                  >
+                  <Button className="group -m-2 flex items-center p-2">
                     <ShoppingBagIcon
                       className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true"
                     />
-                    <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      
-                    </span>
+                    <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800"></span>
                     <span className="sr-only">items in cart, view bag</span>
                   </Button>
                 </div>
@@ -464,7 +480,7 @@ export default function Navigation() {
           </div>
         </nav>
       </header>
-      
+      <AuthModal handleClose={handleCategoryClick} open={openAuthModal} />
     </div>
   );
 }

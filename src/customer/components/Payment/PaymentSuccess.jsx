@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePayment } from "../../../Redux/Customers/Payment/Action";
+
 import { Alert, AlertTitle, Box, Grid } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import StarIcon from "@mui/icons-material/Star";
-import { getOrderById } from "../../../Redux/Customers/Order/Action";
-import OrderTraker from "../orders/OrderTraker";
-import AddressCard from "../adreess/AdreessCard";
+
 import { useParams } from "react-router-dom";
+import OrderTraker from "../Order/OrderTracker";
+import { getOrderById } from "../../../State/Customers/Order/Action";
+import AddressCard from "../AddressCard/AddressCard";
+import { updatePayment } from "../../../State/Customers/Payment/Action";
 
 const PaymentSuccess = () => {
   // razorpay_payment_link_reference_id
@@ -23,6 +25,8 @@ const PaymentSuccess = () => {
   const dispatch = useDispatch();
   const { order } = useSelector((store) => store);
 
+    console.log("order", order.order)
+
   useEffect(() => {
     console.log("orderId",orderId)
     const urlParams = new URLSearchParams(window.location.search);
@@ -33,7 +37,7 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     if (paymentId && paymentStatus === "paid") {
-      const data = { orderId, paymentId, jwt };
+      const data = { orderId, paymentId };
       dispatch(updatePayment(data));
       dispatch(getOrderById(orderId));
     }
@@ -70,7 +74,7 @@ const PaymentSuccess = () => {
                   src={item?.product.imageUrl}
                   alt=""
                 />
-                <div className="ml-5 space-y-2">
+                <div className="ml-5 space-y-2 text-left">
                   <p className="">{item.product.title}</p>
                   <p className="opacity-50 text-xs font-semibold space-x-5">
                     <span>Color: pink</span> <span>Size: {item.size}</span>

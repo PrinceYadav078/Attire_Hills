@@ -5,6 +5,7 @@ import CartItem from "../Cart/CartItem";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderById } from "../../../State/Customers/Order/Action";
+import { createPayment } from "../../../State/Customers/Payment/Action";
 
 const OrderSummary = () => {
   const navigate = useNavigate();
@@ -20,6 +21,10 @@ const OrderSummary = () => {
   useEffect(() => {
     dispatch(getOrderById(orderId));
   }, [orderId]);
+
+  const handleCheckout=()=>{
+    dispatch(createPayment(orderId))
+  }
 
   return (
     <div>
@@ -58,7 +63,7 @@ const OrderSummary = () => {
               </div>
 
               <Button
-                // onClick={() => navigate("/checkout?step=2")}
+                onClick={handleCheckout}
                 variant="contained"
                 type="submit"
                 sx={{

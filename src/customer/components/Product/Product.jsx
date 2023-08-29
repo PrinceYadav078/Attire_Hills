@@ -12,7 +12,7 @@
   }
   ```
 */
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
@@ -30,12 +30,17 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  Pagination,
   Radio,
   RadioGroup,
 } from "@mui/material";
 
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { findProducts } from "../../../State/Customers/Product/Action";
+
+
 
 const sortOptions = [
   { name: "Price: Low to High", href: "#", current: false },
@@ -49,7 +54,55 @@ function classNames(...classes) {
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const location = useLocation();
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+  const param = useParams();
+  const dispatch = useDispatch();
+
+  const {customersProduct}= useSelector(store=>store)
+
+
+  const decodedQueryString = decodeURIComponent(location.search);
+  const searchParams = new URLSearchParams(decodedQueryString);
+  const colorValue = searchParams.get("color");
+  const sizeValue = searchParams.get("size");
+  const priceValue = searchParams.get("price");
+  const disccount = searchParams.get("disccout");
+  const sortValue = searchParams.get("sort");
+  const pageNumber = searchParams.get("page") || 1;
+  const stock = searchParams.get("stock");
+
+  useEffect(() => {
+    const [minPrice, maxPrice] = priceValue === null ? [0, 10000 ] : priceValue.split("-").map(Number);
+    const data = {
+      category: param.lavelThree,
+      colors: colorValue || [],
+      sizes: sizeValue || [],
+      minPrice,
+      maxPrice,
+      minDiscount: disccount || 0,
+      sort: sortValue || "price_low",
+      pageNumber: pageNumber-1,
+      pageSize: 10,
+      stock: stock
+    };
+    dispatch(findProducts(data));
+  }, [
+    param.lavelThree,
+    colorValue,
+    sizeValue,
+    priceValue,
+    disccount,
+    sortValue,
+    pageNumber,
+    stock,
+  ]);
+
+  const handlePaginationChange = (event, value) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("page", value);
+    const query = searchParams.toString();
+    navigate({ search: `?${query}` });
+  };
   const handleFilter = (value, sectionId) => {
     const searchParams = new URLSearchParams(location.search);
 
@@ -276,9 +329,7 @@ export default function Product() {
               {/* Filters */}
               <div>
                 <div className="flex justify-between items-center">
-                  <h1 className="text-lg opacity-50 font-bold ">
-                    Filters
-                  </h1>
+                  <h1 className="text-lg opacity-50 font-bold ">Filters</h1>
                   <FilterListIcon />
                 </div>
 
@@ -319,7 +370,9 @@ export default function Product() {
                                   className="flex items-center"
                                 >
                                   <input
-                                  onChange={()=>handleFilter(option.value,section.id)}
+                                    onChange={() =>
+                                      handleFilter(option.value, section.id)
+                                    }
                                     id={`filter-${section.id}-${optionIdx}`}
                                     name={`${section.id}[]`}
                                     defaultValue={option.value}
@@ -385,7 +438,9 @@ export default function Product() {
                                   {section.options.map((option, optionIdx) => (
                                     <>
                                       <FormControlLabel
-                                      onChange={(e)=>handleRadioFilterChange(e,section.id)}
+                                        onChange={(e) =>
+                                          handleRadioFilterChange(e, section.id)
+                                        }
                                         value={option.value}
                                         control={<Radio />}
                                         label={option.label}
@@ -405,13 +460,24 @@ export default function Product() {
               {/* Product grid */}
               <div className="lg:col-span-4 w-full">
                 <div className="flex flex-wrap justify-center bg-white py-5">
-                  {mens_kurta.map((item) => (
+                  {customersProduct.products && customersProduct.products?.content?.map((item) => (
                     <ProductCard product={item} />
                   ))}
                 </div>
               </div>
             </div>
           </section>
+           {/* pagination section */}
+        <section className="w-full px-[3.6rem]">
+          <div className="mx-auto px-4 py-5 flex justify-center shadow-lg border rounded-md">
+            <Pagination
+              count={customersProduct.products?.totalPages}
+              color="primary"
+              className=""
+              onChange={handlePaginationChange}
+            />
+          </div>
+        </section>
         </main>
       </div>
     </div>

@@ -5,7 +5,7 @@ import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
 import { Button } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 
-const HomeSectionCarousel = ({data, sectionName}) => {
+const HomeSectionCarousel = ({data, sectionName,path}) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const responsive = {
@@ -20,7 +20,7 @@ const HomeSectionCarousel = ({data, sectionName}) => {
   const syncActiveIndex = ({ item }) => setActiveIndex(item);
 
   const items = data.slice(0,10).map((item) => (
-    <HomeSectionCard  product={item}/>
+    <HomeSectionCard  product={item} path={path}/>
   ));
   return (
     <div className="  border ">
